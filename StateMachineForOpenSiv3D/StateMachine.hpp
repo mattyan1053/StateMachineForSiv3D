@@ -93,7 +93,7 @@ public:
 	void goToState(T nextStateId) {
 
 		if (!m_stateList.contains(nextStateId)) {
-			Print << U"Error: Not exist stete: " << nextStateId;
+			Print << U"Error: Not exist state: " << nextStateId;
 			return;
 		}
 
