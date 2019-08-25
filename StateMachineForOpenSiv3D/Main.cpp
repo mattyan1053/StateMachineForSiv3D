@@ -31,14 +31,14 @@ public:
 
 		// idle
 		{
-			auto s = new Idle(*this);
-			addState(s);
+			auto state = new Idle(*this);
+			addState(state);
 		}
 
 		// moving
 		{
-			auto s = new Moving(*this);
-			addState(s);
+			auto state = new Moving(*this);
+			addState(state);
 		}
 	}
 
@@ -51,7 +51,7 @@ public:
 		// 状態移行直後
 		virtual void setUp() override {
 			main.m_ball.x = 100;
-			Print << U"Idle";
+			Print << U"Start Idle";
 		}
 		// 状態の最中
 		virtual void update() override {
@@ -64,7 +64,7 @@ public:
 		}
 		// 状態終了時
 		virtual void cleanUp() override {
-			Print << U"Start moving";
+			Print << U"Finish Idle";
 		}
 	};
 
@@ -73,7 +73,7 @@ public:
 		Moving(MovingBall& _main) :State<BallStates>(BallStates::Moving), main(_main) {}
 
 		virtual void setUp() override {
-			Print << U"Moving";
+			Print << U"Start Moving";
 		}
 		virtual void update() override {
 			main.m_ball.x += 10;

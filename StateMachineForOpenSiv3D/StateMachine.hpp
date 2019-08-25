@@ -56,12 +56,12 @@ private:
 	/// <summary>
 	/// 状態リスト
 	/// </summary>
-	std::unordered_map<T, std::shared_ptr<State<T>>> stateList;
+	std::unordered_map<T, std::shared_ptr<State<T>>> m_stateList;
 
 	/// <summary>
 	/// 現在の状態
 	/// </summary>
-	std::shared_ptr<State<T>> state;
+	std::shared_ptr<State<T>> m_state;
 
 public:
 
@@ -75,7 +75,7 @@ public:
 	/// </summary>
 	/// <returns> 現在の状態 </returns>
 	State<T> currentState() {
-		return *state;
+		return *m_state;
 	}
 
 	/// <summary>
@@ -84,17 +84,17 @@ public:
 	/// <param name="nextStateId"> 移行先の状態ID </param>
 	void goToState(T nextStateId) {
 
-		if (!stateList.contains(nextStateId)) {
+		if (!m_stateList.contains(nextStateId)) {
 			Print << U"Error: Not exist stete: " << nextStateId;
 			return;
 		}
 
-		if (state != nullptr) {
-			state->cleanUp();
+		if (m_state != nullptr) {
+			m_state->cleanUp();
 		}
 
-		state = stateList[nextStateId];
-		state->setUp();
+		m_state = m_stateList[nextStateId];
+		m_state->setUp();
 
 	}
 
@@ -106,17 +106,17 @@ public:
 	/// <summary>
 	/// 状態を追加します。
 	/// </summary>
-	/// <param name="s"> 追加する状態 </param>
-	void addState(State<T> *s) {
-		if (s == nullptr) {
+	/// <param name="state"> 追加する状態 </param>
+	void addState(State<T> *state) {
+		if (state == nullptr) {
 			Print << U"Error: This state is nullptr";
 			return;
 		}
-		if (stateList.contains(s->Id())) {
-			Print << U"Error: Already exist state: " << s->Id();
+		if (m_stateList.contains(state->Id())) {
+			Print << U"Error: Already exist state: " << state->Id();
 			return;
 		}
-		stateList[s->Id()] = std::shared_ptr<State<T>>(s);
+		m_stateList[state->Id()] = std::shared_ptr<State<T>>(state);
 	}
 
 	/// <summary>
@@ -125,16 +125,16 @@ public:
 	/// <param name="stateId"> 現在の状態と比較する状態 </param>
 	/// <returns> 現在の状態が指定の状態と一致するかどうかの真偽 </returns>
 	bool isStateSame(T stateId) {
-		if (state == nullptr) return false;
-		return state->Id() == stateId;
+		if (m_state == nullptr) return false;
+		return m_state->Id() == stateId;
 	}
 
 	/// <summary>
 	/// 毎フレーム呼ばれます。情報を更新します。
 	/// </summary>
 	void update() {
-		if (state != nullptr) {
-			state->update();
+		if (m_state != nullptr) {
+			m_state->update();
 		}
 	}
 
@@ -142,8 +142,8 @@ public:
 	/// 毎フレーム呼ばれます。描画を更新します。
 	/// </summary>
 	void draw() const {
-		if (state != nullptr) {
-			state->draw();
+		if (m_state != nullptr) {
+			m_state->draw();
 		}
 	}
 
