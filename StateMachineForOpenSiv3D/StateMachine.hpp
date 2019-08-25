@@ -13,6 +13,12 @@ private:
 public:
 
 	/// <summary>
+	/// デフォルトコンストラクタ
+	/// </summary>
+	/// <remarks> 必ず状態IDをつけます。 </remarks>
+	State() = delete;
+
+	/// <summary>
 	/// 新しい状態を作成します。
 	/// </summary>
 	/// <param name="id"> 状態ID </param>
@@ -26,22 +32,24 @@ public:
 	/// <summary>
 	/// 状態に入ったときに呼ばれます。
 	/// </summary>
-	virtual void setUp() = 0;
+	virtual void setUp() {};
 
 	/// <summary>
-	/// 毎フレーム呼ばれます。情報を更新します。
+	/// 情報を更新します。
 	/// </summary>
-	virtual void update() = 0;
+	/// <remarks> 毎フレーム呼ばれます。 </remarks>
+	virtual void update() {};
 
 	/// <summary>
-	/// 毎フレーム呼ばれます。描画を更新します。
+	/// 描画を更新します。
 	/// </sumamry>
-	virtual void draw() const = 0;
+	/// <remarks> 毎フレーム呼ばれます。 </remarks>
+	virtual void draw() const {};
 
 	/// <summary>
 	/// 次の状態に移る前に呼ばれます。
 	/// </summary>
-	virtual void cleanUp() = 0;
+	virtual void cleanUp() {};
 
 };
 
@@ -101,6 +109,7 @@ public:
 	/// <summary>
 	/// ステートマシンの初期化を行います。
 	/// </summary>
+	/// <remarks> 必ずオーバーライドします。 </remarks>
 	virtual void initializeStateMachine() = 0;
 
 	/// <summary>
@@ -108,15 +117,16 @@ public:
 	/// </summary>
 	/// <param name="state"> 追加する状態 </param>
 	void addState(State<T> *state) {
-		if (state == nullptr) {
+		std::shared_ptr<State<T>> s(state);
+		if (s == nullptr) {
 			Print << U"Error: This state is nullptr";
 			return;
 		}
-		if (m_stateList.contains(state->Id())) {
-			Print << U"Error: Already exist state: " << state->Id();
+		if (m_stateList.contains(s->Id())) {
+			Print << U"Error: Already exist state: " << s->Id();
 			return;
 		}
-		m_stateList[state->Id()] = std::shared_ptr<State<T>>(state);
+		m_stateList[s->Id()] = s;
 	}
 
 	/// <summary>

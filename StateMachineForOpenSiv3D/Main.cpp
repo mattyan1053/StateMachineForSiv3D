@@ -55,7 +55,7 @@ public:
 		}
 		// 状態の最中
 		virtual void update() override {
-			if (main.m_ball.leftClicked()) {
+			if (MouseL.down()) {
 				main.goToState(BallStates::Moving);
 			}
 		}
