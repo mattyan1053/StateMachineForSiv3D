@@ -24,7 +24,11 @@ public:
 		goToState(BallStates::Idle);
 	}
 
+	// ステートマシンを初期化する。
 	virtual void initializeStateMachine() override {
+
+		// 状態を追加していく。
+
 		// idle
 		{
 			auto s = new Idle(*this);
@@ -40,13 +44,16 @@ public:
 
 	// 状態をインナークラスで定義する。
 	struct Idle : public State<BallStates> {
+		// 外側クラスを覚えておくとアクセスできる
 		MovingBall& main;
 		Idle(MovingBall &_main) :State<BallStates>(BallStates::Idle), main(_main) {}
 
+		// 状態移行直後
 		virtual void setUp() override {
 			main.m_ball.x = 100;
 			Print << U"Idle";
 		}
+		// 状態の最中
 		virtual void update() override {
 			if (main.m_ball.leftClicked()) {
 				main.goToState(BallStates::Moving);
@@ -55,6 +62,7 @@ public:
 		virtual void draw() const override {
 			main.m_ball.draw(Palette::Blue);
 		}
+		// 状態終了時
 		virtual void cleanUp() override {
 			Print << U"Start moving";
 		}
@@ -87,9 +95,6 @@ void Main()
 {
 	// 背景を水色にする
 	Scene::SetBackground(ColorF(0.8, 0.9, 1.0));
-
-	// 大きさ 60 のフォントを用意
-	const Font font(60);
 
 	// 状態を持つオブジェクト
 	MovingBall b;

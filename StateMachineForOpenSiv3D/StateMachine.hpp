@@ -1,5 +1,4 @@
 # pragma once
-# include <unordered_map>
 # include <Siv3D.hpp>
 
 /// <summary>
@@ -107,6 +106,7 @@ public:
 	/// <summary>
 	/// ó‘Ô‚ğ’Ç‰Á‚µ‚Ü‚·B
 	/// </summary>
+	/// <param name="s"> ’Ç‰Á‚·‚éó‘Ô </param>
 	void addState(State<T> *s) {
 		if (s == nullptr) {
 			Print << U"Error: This state is nullptr";
