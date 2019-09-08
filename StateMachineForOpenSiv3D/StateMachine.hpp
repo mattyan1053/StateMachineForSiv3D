@@ -22,34 +22,39 @@ public:
 	/// 新しい状態を作成します。
 	/// </summary>
 	/// <param name="id"> 状態ID </param>
-	State(T id) :m_id(id) {}
+	explicit State(T id) :m_id(id) {}
+
+	/// <summary>
+	/// デフォルトデストラクタ
+	/// </summary>
+	virtual ~State() = default;
 
 	/// <summary>
 	/// 状態IDを取得します。
 	/// </summary>
-	T Id() { return m_id; }
+	const T& Id() { return m_id; }
 
 	/// <summary>
 	/// 状態に入ったときに呼ばれます。
 	/// </summary>
-	virtual void setUp() {};
+	virtual void setUp() {}
 
 	/// <summary>
 	/// 情報を更新します。
 	/// </summary>
 	/// <remarks> 毎フレーム呼ばれます。 </remarks>
-	virtual void update() {};
+	virtual void update() {}
 
 	/// <summary>
 	/// 描画を更新します。
 	/// </sumamry>
 	/// <remarks> 毎フレーム呼ばれます。 </remarks>
-	virtual void draw() const {};
+	virtual void draw() const {}
 
 	/// <summary>
 	/// 次の状態に移る前に呼ばれます。
 	/// </summary>
-	virtual void cleanUp() {};
+	virtual void cleanUp() {}
 
 };
 
@@ -64,7 +69,7 @@ private:
 	/// <summary>
 	/// 状態リスト
 	/// </summary>
-	std::unordered_map<T, std::shared_ptr<State<T>>> m_stateList;
+	HashTable<T, std::shared_ptr<State<T>>> m_stateList;
 
 	/// <summary>
 	/// 現在の状態
@@ -76,14 +81,22 @@ public:
 	/// <summary>
 	/// デフォルトコンストラクタ
 	/// </summary>
-	StateMachine() {	}
+	StateMachine() = default;
 
 	/// <summary>
-	/// 現在の状態を返します。
+	/// デフォルトデストラクタ
 	/// </summary>
-	/// <returns> 現在の状態 </returns>
-	State<T> currentState() {
-		return *m_state;
+	virtual ~StateMachine() = default;
+
+	/// <summary>
+	/// 現在の状態のIDを返します。
+	/// </summary>
+	/// <returns> 現在の状態のID </returns>
+	Optional<const T&> getCurrentStateName() const {
+		if (m_state == nullptr) {
+			return none;
+		}
+		return m_state->Id();
 	}
 
 	/// <summary>
@@ -115,46 +128,37 @@ public:
 	/// <summary>
 	/// 状態を追加します。
 	/// </summary>
-	/// <param name="state"> 追加する状態 </param>
-	void addState(State<T> *state) {
-		std::shared_ptr<State<T>> s(state);
-		if (s == nullptr) {
+	/// <param name="state"> 追加する状態のstd::make_shared</param>
+	void addState(const std::shared_ptr<State<T>>& state) {
+		if (state == nullptr) {
 			Print << U"Error: This state is nullptr";
 			return;
 		}
-		if (m_stateList.contains(s->Id())) {
-			Print << U"Error: Already exist state: " << s->Id();
+		if (m_stateList.contains(state->Id())) {
+			Print << U"Error: Already exist state: " << state->Id();
 			return;
 		}
-		m_stateList[s->Id()] = s;
-	}
-
-	/// <summary>
-	/// 現在の状態が指定の状態かどうか調べます。
-	/// </summary>
-	/// <param name="stateId"> 現在の状態と比較する状態 </param>
-	/// <returns> 現在の状態が指定の状態と一致するかどうかの真偽 </returns>
-	bool isStateSame(T stateId) {
-		if (m_state == nullptr) return false;
-		return m_state->Id() == stateId;
+		m_stateList[state->Id()] = state;
 	}
 
 	/// <summary>
 	/// 毎フレーム呼ばれます。情報を更新します。
 	/// </summary>
 	void update() {
-		if (m_state != nullptr) {
-			m_state->update();
+		if (m_state == nullptr) {
+			return;
 		}
+		m_state->update();
 	}
 
 	/// <summary>
 	/// 毎フレーム呼ばれます。描画を更新します。
 	/// </summary>
 	void draw() const {
-		if (m_state != nullptr) {
-			m_state->draw();
+		if (m_state == nullptr) {
+			return;
 		}
+		m_state->draw();
 	}
 
 };

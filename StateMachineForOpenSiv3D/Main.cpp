@@ -25,21 +25,12 @@ public:
 	}
 
 	// ステートマシンを初期化する。
-	virtual void initializeStateMachine() override {
+	void initializeStateMachine() override {
 
 		// 状態を追加していく。
+		addState(std::make_shared<Idle>(*this));
+		addState(std::make_shared<Moving>(*this));
 
-		// idle
-		{
-			auto state = new Idle(*this);
-			addState(state);
-		}
-
-		// moving
-		{
-			auto state = new Moving(*this);
-			addState(state);
-		}
 	}
 
 	// 状態をインナークラスで定義する。
@@ -49,21 +40,21 @@ public:
 		Idle(MovingBall &_main) :State<BallStates>(BallStates::Idle), main(_main) {}
 
 		// 状態移行直後
-		virtual void setUp() override {
+		void setUp() override {
 			main.m_ball.x = 100;
 			Print << U"Start Idle";
 		}
 		// 状態の最中
-		virtual void update() override {
+		void update() override {
 			if (MouseL.down()) {
 				main.goToState(BallStates::Moving);
 			}
 		}
-		virtual void draw() const override {
+		void draw() const override {
 			main.m_ball.draw(Palette::Blue);
 		}
 		// 状態終了時
-		virtual void cleanUp() override {
+		void cleanUp() override {
 			Print << U"Finish Idle";
 		}
 	};
@@ -72,19 +63,19 @@ public:
 		MovingBall& main;
 		Moving(MovingBall& _main) :State<BallStates>(BallStates::Moving), main(_main) {}
 
-		virtual void setUp() override {
+		void setUp() override {
 			Print << U"Start Moving";
 		}
-		virtual void update() override {
+		void update() override {
 			main.m_ball.x += 10;
 			if (main.m_ball.x >= 500) {
 				main.goToState(BallStates::Idle);
 			}
 		}
-		virtual void draw() const override {
+		void draw() const override {
 			main.m_ball.draw(Palette::Red);
 		}
-		virtual void cleanUp() override {
+		void cleanUp() override {
 			Print << U"Finish Moving";
 		}
 	};
